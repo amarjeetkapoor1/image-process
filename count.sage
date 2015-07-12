@@ -2,7 +2,7 @@ import cv2
 import numpy
 from matplotlib import image
 
-def count_color(img)
+def count_color(img):
 	img=img.astype('int')
 	a=(img[:,:,0]+1000*img[:,:,1]+1000000*img[:,:,2])
 	a=a.astype('int')
@@ -12,7 +12,7 @@ def count_color(img)
 	count=0
 	for r in range(x) :
 		for b in range(y):
-		color.append(a[r][b])
+			color.append(a[r][b])
 	color.sort()
 	no=0
 	no_colors=[]
@@ -30,3 +30,5 @@ def count_color(img)
 	no_colors.append(b)
 	value_colors.append(tr)
 	return no_colors , value_colors
+
+
