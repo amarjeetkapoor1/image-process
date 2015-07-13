@@ -7,14 +7,15 @@ from skimage.measure import regionprops
 
 def getshape(binary,orignal,shape):
 	r,w=sy.measurements.label(binary)
-	pro=regionprops(r)
+	pro=regionprops(r,img)
 	cmax={'circle':1,'square':0.829999,'triangle':0.793}
 	cmin={'circle':0.80,'square':0.720,'triangle':0.30}
 	xmax={'circle':0.90,'square':1,'triangle':0.70}
 	xmin={'circle':0.70,'square':0.90,'triangle':0.30}
+	print('circlularity' ,'extent', 'orientation','aspect ratio','eccentricity')
 	for a in range(len(pro)):
 		q=n(4*pi*pro[a].area/pro[a].perimeter^2)
-		print(q , pro[a].extent, pro[a].eccentricity)
+		print(q , pro[a].extent, pro[a].orientation,pro[a].minor_axis_length/pro[a].major_axis_length,pro[a].eccentricity)
 		if(pro[a].extent>=xmin[shape] and pro[a].extent <=xmax[shape] ):
 			print(q)	
 			minr, minc, maxr, maxc=pro[a].bbox
@@ -49,6 +50,18 @@ def getcolor (img,color,n=0.44):
 	c=cv2.morphologyEx( c, cv2.MORPH_CLOSE,kernal)
 	return c
 
+'''def getcolor(img,color):
+	 	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+		input=readtxt()
+		lower_color = np.array([input['hl'],input['sl'],input['vl']])
+    upper_color = np.array([input['hu',input['su'],input['vu'])
+		mask = cv2.inRange(hsv, lower_color, upper_color)
+		kernal=np.ones((17,17),np.uint8)
+		c=cv2.morphologyEx( c, cv2.MORPH_OPEN,kernal)
+		c=cv2.morphologyEx( c, cv2.MORPH_CLOSE,kernal)
+		return c
+'''
+		
 
 
 def gethomograph(img1):
@@ -65,7 +78,9 @@ def gethomograph(img1):
 		cv2.circle(img1,(int(pro[a].centroid[1]),int(pro[a].centroid[0])),int(5),(int(a),int(b),int(c)))		
 	return H
 
-
+def readtxt( name ):
+	
+	a =readline()
 
 
 
