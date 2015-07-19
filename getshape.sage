@@ -23,7 +23,7 @@ def getshape(binary,orignal,shape):
 			cv2.circle(orignal,(int(pro[a].centroid[1]),int(pro[a].centroid[0])),int(1),(int(1),int(1),int(1)),int(5))
 	return orignal
 
-def getcolor (img,color,n=0.44):
+def getcolor1 (img,color,n=0.44):
 	n=float(n)
 	img=img.astype('float32')
 	img=img**(22/10)
@@ -50,17 +50,13 @@ def getcolor (img,color,n=0.44):
 	c=cv2.morphologyEx( c, cv2.MORPH_CLOSE,kernal)
 	return c
 
-'''def getcolor(img,color):
-	 	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-		input=readtxt()
-		lower_color = np.array([input['hl'],input['sl'],input['vl']])
-    upper_color = np.array([input['hu',input['su'],input['vu'])
-		mask = cv2.inRange(hsv, lower_color, upper_color)
-		kernal=np.ones((17,17),np.uint8)
-		c=cv2.morphologyEx( c, cv2.MORPH_OPEN,kernal)
-		c=cv2.morphologyEx( c, cv2.MORPH_CLOSE,kernal)
-		return c
-'''
+def getcolor(img,color):
+ 	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+	input=readtxt(color)
+	lower_color = np.array([input[0],input[1],input[2]])
+	upper_color = np.array([input[3],input[4],input[5]])
+	mask = cv2.inRange(hsv, lower_color, upper_color)
+	return mask
 		
 
 
@@ -79,8 +75,23 @@ def gethomograph(img1):
 	return H
 
 def readtxt( name ):
-	
-	a =readline()
+	file = open('/home/amarjeet/projects/imageprocess/getcolor.txt')	
+	a = file.readlines()
+	d=[]
+	print(a)
+	for c in a:
+		print(c)
+		c = c.split(' ' or '/n')
+		c=list(c)
+		if c[0] == name :
+			for e in range(len(c)):
+				print(c)
+				if(c[e].isdigit()):
+					d.append(int(c[e]))
+			print(d)
+			return d
+
+
 
 
 
