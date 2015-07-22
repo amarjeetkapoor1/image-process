@@ -7,6 +7,7 @@ from skimage.measure import regionprops
 
 def getshape(binary,orignal,shape):
 	r,w=sy.measurements.label(binary)
+	print(w)
 	pro=regionprops(r,img)
 	cmax={'circle':1,'square':0.829999,'triangle':0.793}
 	cmin={'circle':0.80,'square':0.720,'triangle':0.30}
@@ -16,7 +17,7 @@ def getshape(binary,orignal,shape):
 	for a in range(len(pro)):
 		q=n(4*pi*pro[a].area/pro[a].perimeter^2)
 		print(q , pro[a].extent, pro[a].orientation,pro[a].minor_axis_length/pro[a].major_axis_length,pro[a].eccentricity)
-		if(pro[a].extent>=xmin[shape] and pro[a].extent <=xmax[shape] ):
+		if(q>=cmin[shape] and q <=cmax[shape] ):
 			print(q)	
 			minr, minc, maxr, maxc=pro[a].bbox
 			cv2.rectangle(orignal,(int(minc),int(minr)),(int(maxc),int(maxr)),(int(1),int(1),int(1)),int(5))
@@ -25,16 +26,8 @@ def getshape(binary,orignal,shape):
 
 def getcolor1 (img,color,n=0.44):
 	n=float(n)
-	img=img.astype('float32')
-	img=img**(22/10)
-	b,g,r=cv2.split(img)
-	Y=r+b+g
-	R=r/Y
-	G=g/Y
-	B=b/Y
-	R=R.astype('float32')
-	B=B.astype('float32')
-	G=G.astype('float32')
+	img=chroma(img)
+	B,G,R=cv2.split(img)
 	if(color=='red'):
 		c=R>n
 		c=c*255
@@ -45,18 +38,38 @@ def getcolor1 (img,color,n=0.44):
 		c=B>n
 		c=c*255
 	c=c.astype('uint8')
-	kernal=np.ones((17,17),np.uint8)
+	kernal=np.ones((7,7),np.uint8)
 	c=cv2.morphologyEx( c, cv2.MORPH_OPEN,kernal)
 	c=cv2.morphologyEx( c, cv2.MORPH_CLOSE,kernal)
 	return c
 
+def chroma(img):
+	img=img.astype('float32')
+	img=img**(22/10)
+	b,g,r=cv2.split(img)
+	Y=r+b+g
+	R=r/Y
+	G=g/Y
+	B=b/Y
+	return cv2.merge([B,G,R])
+	
 def getcolor(img,color):
- 	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+	img=chroma(img)
+	img=img*255
+	img=img.astype('uint8')	
+	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 	input=readtxt(color)
 	lower_color = np.array([input[0],input[1],input[2]])
 	upper_color = np.array([input[3],input[4],input[5]])
 	mask = cv2.inRange(hsv, lower_color, upper_color)
-	return mask
+	kernal=np.ones((11,11),np.uint8)
+	c=cv2.morphologyEx( mask, cv2.MORPH_OPEN,kernal)
+	kernal=np.ones((11,11),np.uint8)
+	c=cv2.morphologyEx(mask, cv2.MORPH_CLOSE,kernal)
+	if(color == 'Red'):
+		d=getcolor(img,'Red1')
+		c=d+c
+	return c
 		
 
 
