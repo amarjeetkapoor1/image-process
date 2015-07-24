@@ -1,3 +1,4 @@
+'''libraries to be imported '''
 import cv2
 import numpy as np
 import scipy.ndimage as sy
@@ -5,25 +6,31 @@ import matplotlib.pylab as py
 from skimage.measure import regionprops
 import os
 
+#function to find blob of particular shape in binary image
+''' getshape take three paramter binary image, orignal image and 
+shape which is to be found'''
 def getshape(binary,orignal,shape):
 	r,w=sy.measurements.label(binary)
 	print(w)
 	pro=regionprops(r)
 	cmax={'circle':1,'square':0.84999,'triangle':0.71}
 	cmin={'circle':0.85,'square':0.720,'triangle':0.30}
-	xmax={'circle':0.90,'square':1,'triangle':0.70}
-	xmin={'circle':0.70,'square':0.90,'triangle':0.30}
-	print('circlularity' ,'extent', 'orientation','aspect ratio','eccentricity')
+	emax={'circle':0.90,'square':1,'triangle':0.70}
+	emin={'circle':0.70,'square':0.90,'triangle':0.30}
+	print('circlularity' ,'extent', 'orientation','aspect ratio',
+	'eccentricity')
 	for a in range(len(pro)): 
 			q=(4*22*pro[a].area)/(7*(pro[a].perimeter**2))
 			print(q,pro[a].extent, pro[a].orientation,pro[a].eccentricity)
 			if(q>=cmin[shape] and q<=cmax[shape] ):
-				print('asdfghjhgdfsdasdfghghfds')
 				minr, minc, maxr, maxc=pro[a].bbox
-				cv2.rectangle(orignal,(int(minc),int(minr)),(int(maxc),int(maxr)),(int(1),int(1),int(1)),int(5))
-				cv2.circle(orignal,(int(pro[a].centroid[1]),int(pro[a].centroid[0])),int(1),(int(1),int(1),int(1)),int(5))
+				cv2.rectangle(orignal,(minc,minr),(maxc,maxr),(1,1,1),5)
+				cv2.circle(orignal,
+				(int(pro[a].centroid[1]),int(pro[a].centroid[0])),
+				1,(1,1,1),5)
 	return orignal
 
+'''function to find basic RGB color in image using threshold'''
 def getcolor1 (img,color,n=0.44):
 	n=float(n)
 	img=chroma(img)
@@ -42,6 +49,7 @@ def getcolor1 (img,color,n=0.44):
 	c=cv2.morphologyEx( c, cv2.MORPH_OPEN,kernal)
 	c=cv2.morphologyEx( c, cv2.MORPH_CLOSE,kernal)
 	return c
+'''function to find chromatacity of image'''
 
 def chroma(img):
 	img=img.astype('float32')
@@ -52,7 +60,8 @@ def chroma(img):
 	G=g/Y
 	B=b/Y
 	return cv2.merge([B,G,R])
-	
+
+''' function to find colors in image using HSV'''	
 def getcolor(img,color):
 	a=chroma(img)
 	a=a*255
@@ -72,7 +81,7 @@ def getcolor(img,color):
 	return c
 		
 
-
+'''function to find homography points for making homograpy matrix'''
 def gethomograph(img1):
 	c=getcolor(img1,'blue',0.45)
 	r,w=sy.measurements.label(c)
@@ -84,11 +93,13 @@ def gethomograph(img1):
 		q=n(4*pi*pro[a].area/pro[a].perimeter^2)
 		H[a][0]=pro[a].centroid[0]	
 		H[a][1]=pro[a].centroid[1]
-		cv2.circle(img1,(int(pro[a].centroid[1]),int(pro[a].centroid[0])),int(5),(int(a),int(b),int(c)))		
+		cv2.circle(img1,(int(pro[a].centroid[1]),int(pro[a].centroid[0]))
+		,5,(a,b,c))		
 	return H
 
+'''function to read data of color from image'''
 def readtxt( name ):
-	file = open('/home/amarjeet/projects/imageprocess/getcolor.txt')	
+	file = open('getcolor.txt')	
 	a = file.readlines()
 	d=[]
 	for c in a:
