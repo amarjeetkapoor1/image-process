@@ -1,6 +1,7 @@
 # image-process
 This repository contain functions used for Image Processing and Robotic Vision.
 Modules in this repository are made using-:
+
 1.Python
 2.Opencv
 3.sagemath
@@ -19,6 +20,7 @@ blob.py (this program finds blue color bolobs in image)
 
 
 programs-:
+
 1.doc.sage(this program find maxima and minma in color list and 
   transform image into one with only color within maxima)
 2.find_no_color_sir.sage ( this program find no. colors in image using particular place for all color values )

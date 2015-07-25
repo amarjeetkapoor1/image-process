@@ -5,7 +5,7 @@ import matplotlib.pylab as py
 from skimage.measure import regionprops
 import os
 
-def getshape(binary,orignal,shape):
+def getshape1(binary,orignal,shape):
 	r,w=sy.measurements.label(binary)
 	print(w)
 	pro=regionprops(r)
@@ -14,15 +14,29 @@ def getshape(binary,orignal,shape):
 	xmax={'circle':0.90,'square':1,'triangle':0.70}
 	xmin={'circle':0.70,'square':0.90,'triangle':0.30}
 	print('circlularity' ,'extent', 'orientation','aspect ratio','eccentricity')
-	for a in range(len(pro)): 
-			#q=n(4*pi*pro[a].area/pro[a].perimeter^2)
-			print( pro[a].extent, pro[a].orientation,pro[a].eccentricity)
-			if(pro[a].extent >=xmin[shape] and pro[a].extent <=xmax[shape] ):
-				print(q)	
-				minr, minc, maxr, maxc=pro[a].bbox
-				cv2.rectangle(orignal,(int(minc),int(minr)),(int(maxc),int(maxr)),(int(1),int(1),int(1)),int(5))
-				cv2.circle(orignal,(int(pro[a].centroid[1]),int(pro[a].centroid[0])),int(1),(int(1),int(1),int(1)),int(5))
+	for a in range(len(pro)):
+			if(pro[a].perimeter >= 6):
+				q=n(4*pi*pro[a].area/pro[a].perimeter^2)
+				print( q,pro[a].extent, pro[a].orientation,pro[a].eccentricity)
+				if(pro[a].extent >=xmin[shape] and pro[a].extent <=xmax[shape] ):
+					minr, minc, maxr, maxc=pro[a].bbox
+					cv2.rectangle(orignal,(int(minc),int(minr)),
+					(int(maxc),int(maxr)),(int(1),int(1),int(1)),int(5))
+					cv2.circle(orignal,(int(pro[a].centroid[1]),
+					int(pro[a].centroid[0])),int(1),(int(1),int(1),int(1)),int(5))
 	return orignal
+
+def getshape(binary,orignal,shape):
+	contours, hierarchy = cv2.findContours(
+	binary,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+	cmax={'circle':16,'square':8,'triangle':6}
+	for a in all:
+		epsilon = 0.02*cv2.arcLength(a,True)
+		approx = cv2.approxPolyDP(a,epsilon,True)
+		print(approx.size)
+		if (approx.size == cmax[shape]):
+			cv2.drawContours(orignal,[a],0,(int(40),int(255),int(25)), 3)	
+	return orignal,contours
 
 def getcolor1 (img,color,n=0.44):
 	n=float(n)
@@ -62,7 +76,7 @@ def getcolor(img,color):
 	lower_color = np.array([input[0],input[1],input[2]])
 	upper_color = np.array([input[3],input[4],input[5]])
 	mask = cv2.inRange(hsv, lower_color, upper_color)
-	kernal=np.ones((17,17),np.uint8)
+	kernal=np.ones((3,3),np.uint8)
 	c=cv2.morphologyEx( mask, cv2.MORPH_OPEN,kernal)
 	kernal=np.ones((5,5),np.uint8)
 	c=cv2.morphologyEx(mask, cv2.MORPH_CLOSE,kernal)
@@ -88,7 +102,7 @@ def gethomograph(img1):
 	return H
 
 def readtxt( name ):
-	file = open('/home/amarjeet/projects/imageprocess/getcolor.txt')	
+	file = open('/home/amarjeet/projects/python/imageprocess/getcolor.txt')	
 	a = file.readlines()
 	d=[]
 	for c in a:

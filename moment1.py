@@ -1,5 +1,5 @@
 import cv2
-
+'''this funtion find the moment of blobs'''
 def moment(img,q,p):
 	x,y=img.shape
 	d=0

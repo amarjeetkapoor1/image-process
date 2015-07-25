@@ -9,7 +9,7 @@ import os
 #function to find blob of particular shape in binary image
 ''' getshape take three paramter binary image, orignal image and 
 shape which is to be found'''
-def getshape(binary,orignal,shape):
+def getshape1(binary,orignal,shape):
 	r,w=sy.measurements.label(binary)
 	print(w)
 	pro=regionprops(r)
@@ -29,6 +29,19 @@ def getshape(binary,orignal,shape):
 				(int(pro[a].centroid[1]),int(pro[a].centroid[0])),
 				1,(1,1,1),5)
 	return orignal
+
+#function to find blob of particular shape in binary image using contours
+def getshape(binary,orignal,shape):
+	contours, hierarchy = cv2.findContours(
+	binary,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+	cmax={'circle':16,'square':8,'triangle':6}
+	for a in contours :
+		epsilon = 0.02*cv2.arcLength(a,True)
+		approx = cv2.approxPolyDP(a,epsilon,True)
+		print(approx.size)
+		if (approx.size == cmax[shape]):
+			cv2.drawContours(orignal,[a],0, (int(40),int(255),int(25)), 3)	
+	return orignal,contours
 
 '''function to find basic RGB color in image using threshold'''
 def getcolor1 (img,color,n=0.44):
