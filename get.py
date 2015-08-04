@@ -5,6 +5,7 @@ import scipy.ndimage as sy
 import matplotlib.pylab as py
 from skimage.measure import regionprops
 import os
+import math
 
 #function to find blob of particular shape in binary image
 ''' getshape take three paramter binary image, orignal image and 
@@ -39,10 +40,25 @@ def getshape(binary,orignal,shape):
 		epsilon = 0.02*cv2.arcLength(a,True)
 		approx = cv2.approxPolyDP(a,epsilon,True)
 		x,y=binary.shape
-		if (approx.size == cmax[shape] and cv2.contourArea(a) > x*y/100):
+		if (approx.size == cmax[shape] and cv2.contourArea(a) > x*y/400):
+			print(cv2.contourArea(a))
+			get_distance(approx)
 			cv2.drawContours(orignal,[a],0, (int(0),int(255),int(25)), 3)	
 	return orignal,contours
 
+#finding distance b/w points
+def get_distance(approx):
+	for a in range(approx.size/2):
+			print('no', a)
+			if(a == (approx.size/2)-1):
+				print(
+							math.sqrt((approx[a][0][0]-approx[0][0][1])**2+
+							(approx[a][0][0]-approx[0][0][1])**2))
+			else:
+				print(
+							math.sqrt((approx[a][0][0]-approx[a+1][0][1])**2+
+							(approx[a][0][0]-approx[a+1][0][1])**2))
+				
 '''function to find basic RGB color in image using threshold'''
 def getcolor1 (img,color,n=0.44):
 	n=float(n)
@@ -62,20 +78,24 @@ def getcolor1 (img,color,n=0.44):
 	c=cv2.morphologyEx( c, cv2.MORPH_OPEN,kernal)
 	c=cv2.morphologyEx( c, cv2.MORPH_CLOSE,kernal)
 	return c
+	
 '''function to find chromatacity of image'''
-
 def chroma(img):
+	#change img datatype
 	img=img.astype('float32')
+	#grama correction applied
 	img=img**(22/10)
+	#split color channels
 	b,g,r=cv2.split(img)
+	#calculate chromaticity
 	Y=r+b+g
 	R=r/Y
 	G=g/Y
-	print(r.dtype)
 	B=b/Y
+	#returning merged image
 	return cv2.merge([B,G,R])
 
-''' function to find colors in image using HSV'''	
+'''function to find colors in image using HSV'''
 def getcolor(img,color):
 	a=chroma(img)
 	a=a*255
