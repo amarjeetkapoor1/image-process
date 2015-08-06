@@ -1,0 +1,15 @@
+getshape-:
+	getshape
+	getdistance
+	getangle
+	mark-:
+		circle
+		rectangle
+		that shape
+	mark points
+	
+getcolor-:
+	chroma
+	thresholding
+	getcolor_basic
+	readfile

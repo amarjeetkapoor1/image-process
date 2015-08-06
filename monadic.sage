@@ -14,7 +14,7 @@ def bright(img,n):
 #negative image
 def negative(img):
 	imgB=1-img
-	cv2.imwrite('negative.png',imgB)
+	return imgB
 
 #contrasting image.
 def contrast(img,n):

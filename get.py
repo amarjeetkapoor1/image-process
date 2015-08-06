@@ -7,6 +7,8 @@ from skimage.measure import regionprops
 import os
 import math
 
+name=65
+
 #function to find blob of particular shape in binary image
 ''' getshape take three paramter binary image, orignal image and 
 shape which is to be found'''
@@ -40,27 +42,55 @@ def getshape(binary,orignal,shape):
 		epsilon = 0.02*cv2.arcLength(a,True)
 		approx = cv2.approxPolyDP(a,epsilon,True)
 		x,y=binary.shape
-		if (approx.size == cmax[shape] and cv2.contourArea(a) > x*y/400):
-			print(cv2.contourArea(a))
-			get_distance(approx)
-			cv2.drawContours(orignal,[a],0, (int(0),int(255),int(25)), 3)	
+		if (approx.size == cmax[shape] and cv2.contourArea(a) > x*y/600):
+			mark_points(approx,orignal)
+			#cv2.drawContours(orignal,[a],0, (int(0),int(255),int(25)), 3)	
 	return orignal,contours
+
+def mark_points(approx,image):
+	global name
+	for a in range(approx.size/2):
+		color=image[approx[a][0][1],approx[a][0][0],:]
+		cv2.putText(
+					image,(chr(name)+str(a)),(approx[a][0][0]+3,approx[a][0][1]-3)
+					,cv2.FONT_HERSHEY_SIMPLEX,0.70,
+					(int(color[2]),int(color[1]),int(color[0])),3)
+		cv2.circle(image,
+				(approx[a][0][0],approx[a][0][1]),
+				1,(int(color[2]),int(color[1]),int(color[0])),3)
+	get_distance(approx)
+	name=name+1
+	if(name>122):
+		name=65
 
 #finding distance b/w points
 def get_distance(approx):
+	global name
+	for a in range(approx.size/2):
+			point1=chr(name)+str(a)
+			if(a == (approx.size/2)-1):
+				point2=chr(name)+str(0)
+				print(
+						'distance between points %s and %s is %f'%(point1,point2,
+						math.sqrt((approx[a][0][0]-approx[0][0][0])**2+
+						(approx[a][0][1]-approx[0][0][1])**2)))
+			else:
+				point2=chr(name)+str(a+1)
+				print(
+						'distance between points %s and %s is %f'%(point1,point2,
+						math.sqrt((approx[a][0][0]-approx[a+1][0][0])**2+
+						(approx[a][0][1]-approx[a+1][0][1])**2)))
+'''
+def get_angle(approx):
 	for a in range(approx.size/2):
 			print('no', a)
 			if(a == (approx.size/2)-1):
-				print(
-							math.sqrt((approx[a][0][0]-approx[0][0][1])**2+
-							(approx[a][0][0]-approx[0][0][1])**2))
-			else:
-				print(
-							math.sqrt((approx[a][0][0]-approx[a+1][0][1])**2+
-							(approx[a][0][0]-approx[a+1][0][1])**2))
 				
+			else:
+'''			
+					
 '''function to find basic RGB color in image using threshold'''
-def getcolor1 (img,color,n=0.44):
+def getcolor_basic (img,color,n=0.44):
 	n=float(n)
 	img=chroma(img)
 	B,G,R=cv2.split(img)
@@ -147,20 +177,15 @@ def readtxt (name,filename):
 				if(c[e].isdigit()):
 					d.append(int(c[e]))
 			return d
+			
+'''function to threshold image'''
 
-def threscolor(img):
-	hsv = cv2.cvtColor(a, cv2.COLOR_BGR2HSV)
-	lower_color = np.array([input[0],input[1],input[2]])
-	upper_color = np.array([input[3],input[4],input[5]])
-	mask = cv2.inRange(hsv, lower_color, upper_color)
-	kernal=np.ones((33,33),np.uint8)
-	c=cv2.morphologyEx( mask, cv2.MORPH_OPEN,kernal)
-	kernal=np.ones((5,5),np.uint8)
-	c=cv2.morphologyEx(mask, cv2.MORPH_CLOSE,kernal)
-	if(color == 'Red'):
-		d=getcolor(img,'Red1')
-		c=d+c
-	return c
+def threscolor(img,n):
+	
+	img_copy=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+	img_copy=img_copy>n
+	img_copy=img_copy*255
+	return img_copy
 
 		
 		

@@ -16,7 +16,7 @@ def ma():
 		#reading image of video in frame
 		q,frame = cap.read()
 		#getting binary image
-		binary=get.getcolor(frame,'Red')
+		binary=get.getcolor(frame,'Blue')
 		#identifying shape from binary image and plotting it on original image 
 		f,r=get.getshape(binary,frame,'circle')
 		#displaying image for ms
@@ -30,3 +30,4 @@ def ma():
 			break
 	#destroy window
 	cv2.destroyAllWindows()
+ma()
