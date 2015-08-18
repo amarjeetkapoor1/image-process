@@ -14,9 +14,9 @@ while(1):
 	#reading image of video in frame
 	q,frame = cap.read()
 	#getting binary image
-	binary=get.getcolor(frame,'Red')
+	binary=get.auto_canny(frame)
 	#identifying shape from binary image and plotting it on original image 
-	f,r=get.getshape(binary,frame,'circle')
+	f,r=get.getshape(binary,frame,'square')
 	#displaying image for ms
 	cv2.namedWindow("frame", 1);
 	
